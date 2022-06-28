@@ -1,0 +1,6 @@
+okta_admintoken = "your-admin-token"
+okta_org = "your-okta-org"
+idp_social_facebook_client_id = "your-fb-client-id"
+idp_social_facebook_client_secret = "your-fb-client-secret"
+idp_social_google_client_id = "your-google-client-id"
+idp_social_google_client_secret = "your-google-client-secret"
