@@ -1,6 +1,15 @@
+# overall configuration
+demo_name = "a-unique-name-for-this-demo-with-no-spaces"
+# okta configuration
 okta_admintoken = "your-admin-token"
 okta_org = "your-okta-org"
+okta_issuer_url = "<your okta tenant url>"
 idp_social_facebook_client_id = "your-fb-client-id"
 idp_social_facebook_client_secret = "your-fb-client-secret"
 idp_social_google_client_id = "your-google-client-id"
 idp_social_google_client_secret = "your-google-client-secret"
+# github configuration
+github_token = "<github token with repo create update delete permissions>"
+# heroku configuration
+heroku_api_key = "<your heroku api key>"
+heroku_email = "<your heroku email>"
