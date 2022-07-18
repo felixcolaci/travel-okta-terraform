@@ -104,8 +104,21 @@ resource "okta_policy_mfa" "mfa" {
   status          = "ACTIVE"
   description     = "Force users in mfa group to enroll a second factor"
   groups_included = [okta_group.mfa.id, okta_group.passwordless_email.id, okta_group.passwordless_biometric.id]
+  // is_oie          = true
   okta_password = {
     enroll = "REQUIRED"
+  }
+  okta_email = {
+    "enroll" = "OPTIONAL"
+  }
+  okta_sms = {
+    "enroll" = "OPTIONAL"
+  }
+  phone_number = {
+    "enroll" = "OPTIONAL"
+  }
+  fido_webauthn = {
+    "enroll" = "OPTIONAL"
   }
 }
 
@@ -118,6 +131,7 @@ resource "okta_policy_mfa" "passwordless_email" {
   name        = "Passwordless email"
   status      = "ACTIVE"
   description = "Force user to verify an email address to use that for authentication"
+  is_oie      = true
   okta_email = {
     enroll = "REQUIRED"
   }
@@ -133,7 +147,8 @@ resource "okta_policy_mfa" "passwordless_biometric" {
   name        = "Passwordless biometric"
   status      = "ACTIVE"
   description = "Force users to enroll a webauthn factor to use that for authentication"
-  webauthn = {
+  // is_oie      = true
+  fido_webauthn = {
     enroll = "REQUIRED"
   }
   // have a backup factor
@@ -192,38 +207,43 @@ resource "okta_app_signon_policy_rule" "mfa" {
       "knowledge" : {
         "types" : ["password"]
       },
-      "reauthenticateIn" : "PT43800H"
     })
   ]
 }
 
 resource "okta_app_signon_policy_rule" "passwordless_email" {
-  policy_id       = resource.okta_app_signon_policy.travel_website.id
-  name            = "Passwordless Email"
-  groups_included = [okta_group.passwordless_email.id]
-  factor_mode     = "1FA"
-  priority        = 2
+  policy_id                   = resource.okta_app_signon_policy.travel_website.id
+  name                        = "Passwordless Email"
+  groups_included             = [okta_group.passwordless_email.id]
+  factor_mode                 = "1FA"
+  priority                    = 2
+  type                        = "ASSURANCE"
+  re_authentication_frequency = "PT2H"
   constraints = [
     jsonencode({
-      "posession" : {},
-      "reauthenticateIn" : "PT43800H"
+      "possession" : {
+      },
     })
   ]
 }
 
 resource "okta_app_signon_policy_rule" "passwordless_biometric" {
-  policy_id       = resource.okta_app_signon_policy.travel_website.id
-  name            = "Passwordless Biometric"
-  groups_included = [okta_group.passwordless_biometric.id]
-  factor_mode     = "1FA"
-  priority        = 1
+  policy_id                   = resource.okta_app_signon_policy.travel_website.id
+  name                        = "Passwordless Biometric"
+  groups_included             = [okta_group.passwordless_biometric.id]
+  factor_mode                 = "1FA"
+  priority                    = 1
+  type                        = "ASSURANCE"
+  re_authentication_frequency = "PT2H"
+
   constraints = [
     jsonencode({
-      "posession" : {
+      "possession" : {
         "deviceBound" : "REQUIRED",
+        "hardwareProtection" : "OPTIONAL",
+        "userPresence" : "OPTIONAL",
         "phishingResistant" : "REQUIRED"
-      },
-      "reauthenticateIn" : "PT43800H"
+      }
     })
   ]
 }
