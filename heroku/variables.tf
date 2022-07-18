@@ -30,3 +30,7 @@ variable "issuer" {
 variable "client_secret" {
   type = string
 }
+
+variable "okta_admin_token" {
+  type = string
+}

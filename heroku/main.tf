@@ -28,6 +28,7 @@ resource "heroku_app" "demo_app" {
     APPBASEURL          = "https://${var.demo_name}.herokuapp.com"
     SCOPE               = "openid profile email read:demo offline_access"
     CUSTOM_REGISTRATION = false
+    ADMINTOKEN          = var.okta_admin_token
   }
 }
 

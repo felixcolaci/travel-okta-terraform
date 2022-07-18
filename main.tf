@@ -31,7 +31,8 @@ module "heroku" {
   demo_name      = var.demo_name
   issuer         = var.okta_issuer_url
   # dependencies
-  demo_clone_url = module.github.clone_url
-  client_id      = module.okta.travel_app_client_id
-  client_secret  = module.okta.travel_app_client_secret
+  demo_clone_url   = module.github.clone_url
+  client_id        = module.okta.travel_app_client_id
+  client_secret    = module.okta.travel_app_client_secret
+  okta_admin_token = var.okta_admintoken
 }
