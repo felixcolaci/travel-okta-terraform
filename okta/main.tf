@@ -2,7 +2,7 @@ terraform {
   required_providers {
     okta = {
       source  = "okta/okta"
-      version = "~> 3.20"
+      version = "~> 3.31"
     }
   }
 }
@@ -22,16 +22,19 @@ resource "okta_app_oauth" "travel_website" {
   redirect_uris             = concat(var.travel_app_redirect_uris, ["https://${var.demo_name}.herokuapp.com/authorization-code/callback"])
   post_logout_redirect_uris = concat(var.travel_app_post_logout_redirect_uris, ["https://${var.demo_name}.herokuapp.com"])
   response_types            = ["code"]
+  implicit_assignment       = true
   authentication_policy     = okta_app_signon_policy.travel_website.id
 }
+
 
 data "okta_group" "everyone" {
   name = "Everyone"
 }
-resource "okta_app_group_assignment" "everyone" {
-  app_id   = okta_app_oauth.travel_website.id
-  group_id = data.okta_group.everyone.id
-}
+// disable in favor of application broker mode `okta_app_oauth.travel_website.implicit_assignment`
+// resource "okta_app_group_assignment" "everyone" {
+//   app_id   = okta_app_oauth.travel_website.id
+//   group_id = data.okta_group.everyone.id
+// }
 
 resource "okta_user_schema_property" "auth" {
   index       = "auth"
