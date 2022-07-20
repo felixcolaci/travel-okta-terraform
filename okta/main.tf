@@ -92,6 +92,12 @@ resource "okta_group" "idp_facebook" {
   name        = "IDP: Facebook"
   description = "Users that authenticated through facebeook"
 }
+
+resource "okta_group" "admin_group" {
+  name        = "Admins"
+  description = "Administrators"
+}
+
 resource "okta_authenticator" "email" {
   name = "Email"
   key  = "okta_email"
@@ -302,7 +308,8 @@ resource "okta_group_rule" "mfa" {
   expression_type   = "urn:okta:expression:1.0"
   expression_value  = "user.auth==\"mfa\""
   depends_on = [
-    okta_group.mfa
+    okta_group.mfa,
+    okta_user_schema_property.auth
   ]
 }
 resource "okta_group_rule" "passwordless_email" {
@@ -312,7 +319,8 @@ resource "okta_group_rule" "passwordless_email" {
   expression_type   = "urn:okta:expression:1.0"
   expression_value  = "user.auth==\"passwordless-email\""
   depends_on = [
-    okta_group.passwordless_email
+    okta_group.passwordless_email,
+    okta_user_schema_property.auth
   ]
 }
 resource "okta_group_rule" "passwordless_biometric" {
@@ -322,7 +330,8 @@ resource "okta_group_rule" "passwordless_biometric" {
   expression_type   = "urn:okta:expression:1.0"
   expression_value  = "user.auth==\"passwordless-biometric\""
   depends_on = [
-    okta_group.passwordless_biometric
+    okta_group.passwordless_biometric,
+    okta_user_schema_property.auth
   ]
 }
 
@@ -369,6 +378,8 @@ resource "okta_idp_social" "facebook" {
   client_secret     = var.idp_social_facebook_client_secret
   scopes            = ["public_profile", "email"]
   groups_assignment = [okta_group.idp_facebook.id]
+  groups_action     = "ASSIGN"
+
 }
 resource "okta_idp_social" "google" {
   name              = "Google"
@@ -378,6 +389,7 @@ resource "okta_idp_social" "google" {
   client_secret     = var.idp_social_google_client_secret
   scopes            = ["openid", "profile", "email"]
   groups_assignment = [okta_group.idp_google.id]
+  groups_action     = "ASSIGN"
 
 }
 
