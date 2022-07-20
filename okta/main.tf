@@ -84,6 +84,14 @@ resource "okta_group" "passwordless_biometric" {
   description = "User authenticating passwordless using biometrics"
 }
 
+resource "okta_group" "idp_google" {
+  name        = "IDP: Google"
+  description = "Users that authenticated through google"
+}
+resource "okta_group" "idp_facebook" {
+  name        = "IDP: Facebook"
+  description = "Users that authenticated through facebeook"
+}
 resource "okta_authenticator" "email" {
   name = "Email"
   key  = "okta_email"
@@ -354,20 +362,23 @@ resource "okta_policy_profile_enrollment_apps" "web" {
 }
 
 resource "okta_idp_social" "facebook" {
-  name          = "Facebook"
-  type          = "FACEBOOK"
-  protocol_type = "OAUTH2"
-  client_id     = var.idp_social_facebook_client_id
-  client_secret = var.idp_social_facebook_client_secret
-  scopes        = ["public_profile", "email"]
+  name              = "Facebook"
+  type              = "FACEBOOK"
+  protocol_type     = "OAUTH2"
+  client_id         = var.idp_social_facebook_client_id
+  client_secret     = var.idp_social_facebook_client_secret
+  scopes            = ["public_profile", "email"]
+  groups_assignment = [okta_group.idp_facebook.id]
 }
 resource "okta_idp_social" "google" {
-  name          = "Google"
-  type          = "GOOGLE"
-  protocol_type = "OIDC"
-  client_id     = var.idp_social_google_client_id
-  client_secret = var.idp_social_google_client_secret
-  scopes        = ["openid", "profile", "email"]
+  name              = "Google"
+  type              = "GOOGLE"
+  protocol_type     = "OIDC"
+  client_id         = var.idp_social_google_client_id
+  client_secret     = var.idp_social_google_client_secret
+  scopes            = ["openid", "profile", "email"]
+  groups_assignment = [okta_group.idp_google.id]
+
 }
 
 data "okta_policy" "default_idp_discovery" {
