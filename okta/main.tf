@@ -26,6 +26,27 @@ resource "okta_app_oauth" "travel_website" {
   authentication_policy     = okta_app_signon_policy.travel_website.id
 }
 
+resource "okta_app_saml" "secure_app" {
+  label       = "Secure App"
+  audience    = "IAMShowcase"
+  sso_url     = "https://sptest.iamshowcase.com/acs"
+  recipient   = "https://sptest.iamshowcase.com/acs"
+  destination = "https://sptest.iamshowcase.com/acs"
+  attribute_statements {
+    name   = "firstName"
+    values = ["user.firstName"]
+  }
+  attribute_statements {
+    name   = "lastName"
+    values = ["user.lastName"]
+  }
+  attribute_statements {
+    name         = "groups"
+    type         = "GROUP"
+    filter_type  = "REGEX"
+    filter_value = ".*"
+  }
+}
 
 data "okta_group" "everyone" {
   name = "Everyone"
@@ -94,7 +115,7 @@ resource "okta_group" "idp_facebook" {
 }
 
 resource "okta_group" "admin_group" {
-  name        = "Admins"
+  name        = "customAdmins"
   description = "Administrators"
 }
 
